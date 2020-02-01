@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block body %}
+  <main class="container mt-3">
+    <div class="row mt-5">
+      <div class="col-10 col-md-6 offset-1 offset-md-3 mb-3">
+        <form action="{{ url_for('booking_done', teacher_id=teacher.id, day=day, hour=hour)}}" class="card mb-3">
+          <div class="card-body text-center pt-5">
+            <img src="{{ teacher.picture }}" class="mb-3" width="95" alt="">
+            <h2 class="h5 card-title mt-2 mb-2">{{ teacher.name }}</h2>
+            <p class="my-1">Запись на пробный урок</p>
+            <p class="my-1">{{ day }}, {{ hour }} </p>
+          </div>
+          <hr />
+          <div class="card-body mx-3">
+            <label class="mb-1 mt-2" for="clientName">Вас зовут</label>
+            <input class="form-control" type="text" id="clientName" placeholder="" name="clientName">
+            <label class="mb-1 mt-2" for="clientPhone">Ваш телефон</label>
+            <input class="form-control" type="tel"  id="clientPhone" placeholder="" name="clientPhone">
+            <input type="submit" class="btn btn-primary btn-block mt-4" value="Записаться на пробный урок">
+          </div>
+        </form>
+      </div>
+    </div>
+  </main>
+ 
+{% endblock %}
