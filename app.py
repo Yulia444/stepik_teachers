@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, abort
 from flask_wtf.csrf import CSRFProtect
 import json
 from flask_sqlalchemy import SQLAlchemy
@@ -72,11 +72,13 @@ def profiles(id):
     with app.app_context():
         db.create_all()
         teachers = db.session.query(Teachers).all()
-
-    for key, value in study_goals["goals"].items():
-        for goal in teachers[id].goals.split(' '):
-            if goal == key:
-                id_goals.append(value)
+    if id >= len(teachers):
+        abort(404, description="Teacher is not found")
+    else:
+        for key, value in study_goals["goals"].items():
+            for goal in teachers[id].goals.split(' '):
+                if goal == key:
+                    id_goals.append(value)
     teacher_schedule = json.loads(teachers[id].schedule)
     return render_template("profile.html", teacher = teachers[id], goal_values = id_goals,
      teacher_schedule = teacher_schedule['free'])
