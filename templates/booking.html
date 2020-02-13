@@ -12,11 +12,15 @@
           </div>
           <hr />
           <div class="card-body mx-3">
-            <label class="mb-1 mt-2" for="clientName">Вас зовут</label>
-            <input class="form-control" type="text" id="clientName" placeholder="" name="clientName">
-            <label class="mb-1 mt-2" for="clientPhone">Ваш телефон</label>
-            <input class="form-control" type="tel"  id="clientPhone" placeholder="" name="clientPhone">
-            <input type="submit" class="btn btn-primary btn-block mt-4" value="Записаться на пробный урок">
+            {{ form.csrf_token }}
+   
+            {{ form.clientName.label(class="mb-1 mt-2")}}
+            {{ form.clientName(class="form-control", placeholder="") }}
+     
+            {{ form.clientPhone.label(class="mb-1 mt-2") }}
+            {{ form.clientPhone(class="form-control", placeholder="")}}
+           
+            {{ form.submit(class="btn btn-primary btn-block mt-4") }}
           </div>
         </form>
       </div>
