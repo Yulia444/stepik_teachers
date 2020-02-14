@@ -64,7 +64,9 @@ def goals(goal):
 def profiles(id):
     id_goals = []
     teachers = db.session.query(Teachers).all()
-    if id >= len(teachers):
+    try:
+        teacher = teachers[id]
+    except Exception:
         abort(404, description="Teacher is not found")
     else:
         for key, value in study_goals["goals"].items():
