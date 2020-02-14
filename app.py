@@ -35,16 +35,12 @@ from models import Teachers, Bookings, Requests
 
 @app.route('/')
 def main():
-    lang_teachers = list(teachers)
-    sorted_by_rating = sorted(lang_teachers, key = lambda i: i['rating'], reverse=True)[:6]
-    sorted_by_price = sorted(sorted_by_rating, key = lambda i: i['price'])
-    return render_template("index.html", teachers = sorted_by_price)
+    teachers = db.session.query(Teachers).order_by(Teachers.rating.desc()).group_by(Teachers.price).limit(6)
+    return render_template("index.html", teachers=teachers)
 
 @app.route('/all/')
 def all():
-    with app.app_context():
-        db.create_all()
-        teachers = db.session.query(Teachers).all()
+    teachers = db.session.query(Teachers).all()
     return render_template("all.html", teachers=teachers)
 
 @app.context_processor
@@ -60,18 +56,14 @@ def schedule():
 
 @app.route('/goals/<goal>/')
 def goals(goal):
-    with app.app_context():
-        db.create_all()
-        teachers = db.session.query(Teachers).filter(Teachers.goals.like("%{}%".format(goal))
+    teachers = db.session.query(Teachers).filter(Teachers.goals.like("%{}%".format(goal))
         ).order_by(Teachers.rating.desc()).all()
     return render_template("goal.html", teachers = teachers, goal = study_goals["goals"][goal])
 
 @app.route('/profiles/<int:id>/')
 def profiles(id):
     id_goals = []
-    with app.app_context():
-        db.create_all()
-        teachers = db.session.query(Teachers).all()
+    teachers = db.session.query(Teachers).all()
     if id >= len(teachers):
         abort(404, description="Teacher is not found")
     else:
@@ -95,11 +87,9 @@ def request_done():
     clientName = request.args.get("clientName")
     clientPhone = request.args.get("clientPhone")
 
-    with app.app_context():
-        db.create_all()
-        new_request = Requests(goal=goal, time=time, clientName=clientName, clientPhone=clientPhone)
-        db.session.add(new_request)
-        db.session.commit()
+    new_request = Requests(goal=goal, time=time, clientName=clientName, clientPhone=clientPhone)
+    db.session.add(new_request)
+    db.session.commit()
 
     return render_template("request_done.html", goal=study_goals['goals'][goal],
      time=time, clientName=clientName, clientPhone=clientPhone)
@@ -107,9 +97,7 @@ def request_done():
 @app.route('/booking/<int:id>/<string:day>-<string:hour>')
 def booking(id, day, hour):
     form = Booking()
-    with app.app_context():
-        db.create_all()
-        teachers = db.session.query(Teachers).all()
+    teachers = db.session.query(Teachers).all()
     teacher = teachers[id]
     return render_template("booking.html", teacher=teacher, day=days[day], hour=hour, form=form)
 
@@ -117,13 +105,10 @@ def booking(id, day, hour):
 def booking_done(teacher_id, day, hour):
     clientName = request.args.get("clientName")
     clientPhone = request.args.get("clientPhone")
-
-    with app.app_context():
-        db.create_all()
-        new_booking = Bookings(clientName=clientName, clientPhone=clientPhone, dayOfWeek=day,
+    new_booking = Bookings(clientName=clientName, clientPhone=clientPhone, dayOfWeek=day,
          hour=hour, teacher_id=teacher_id)
-        db.session.add(new_booking)
-        db.session.commit()
+    db.session.add(new_booking)
+    db.session.commit()
     
     return render_template("booking_done.html", day=day, hour=hour, clientName=clientName,
     clientPhone=clientPhone)
