@@ -35,12 +35,12 @@ from models import Teachers, Bookings, Requests
 
 @app.route('/')
 def main():
-    teachers = db.session.query(Teachers).order_by(Teachers.rating.desc()).group_by(Teachers.price).limit(6)
+    teachers = Teachers.query.order_by(Teachers.rating.desc()).group_by(Teachers.price).limit(6)
     return render_template("index.html", teachers=teachers)
 
 @app.route('/all/')
 def all():
-    teachers = db.session.query(Teachers).all()
+    teachers = Teachers.query.all()
     return render_template("all.html", teachers=teachers)
 
 @app.context_processor
@@ -56,14 +56,14 @@ def schedule():
 
 @app.route('/goals/<goal>/')
 def goals(goal):
-    teachers = db.session.query(Teachers).filter(Teachers.goals.like("%{}%".format(goal))
+    teachers = Teachers.query.filter(Teachers.goals.like("%{}%".format(goal))
         ).order_by(Teachers.rating.desc()).all()
     return render_template("goal.html", teachers = teachers, goal = study_goals["goals"][goal])
 
 @app.route('/profiles/<int:id>/')
 def profiles(id):
     id_goals = []
-    teachers = db.session.query(Teachers).all()
+    teachers = Teachers.query.all()
     try:
         teacher = teachers[id]
     except Exception:
@@ -99,7 +99,7 @@ def request_done():
 @app.route('/booking/<int:id>/<string:day>-<string:hour>')
 def booking(id, day, hour):
     form = Booking()
-    teachers = db.session.query(Teachers).all()
+    teachers = Teachers.query.all()
     teacher = teachers[id]
     return render_template("booking.html", teacher=teacher, day=days[day], hour=hour, form=form)
 
